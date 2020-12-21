@@ -1,9 +1,35 @@
 class Modal {
-  constructor(modalSelector, buttons) {
+  constructor(modalSelector, buttons, callbacks) {
     this.modal = document.querySelector(modalSelector);
     this.buttons = buttons;
+    this.callbacks = callbacks === undefined ? {} : callbacks;
+    this.configCallbacks();
 
     this.cleanModal = this.cleanModal.bind(this);
+  }
+
+  validateCallback(name) {
+    if (typeof this.callbacks === 'object' && this.callbacks.hasOwnProperty(name)) {
+      return true;
+    }
+    return false;
+  }
+
+  configCallbacks() {
+    if (this.validateCallback('open')) {
+      this.callbacks.open = this.callbacks.open.bind(this);
+    }
+    if (this.validateCallback('close')) {
+      this.callbacks.close = this.callbacks.close.bind(this);
+    }
+  }
+
+  callbackOpen() {
+    this.validateCallback('open') ? this.callbacks.open() : null;
+  }
+
+  callbackClose() {
+    this.validateCallback('close') ? this.callbacks.close() : null;
   }
 
   setTitle(title) {
@@ -28,6 +54,7 @@ class Modal {
     this.initButtons();
     $(this.modal).modal('show');
     this.opened = true;
+    this.callbackOpen();
   }
 
   /**
@@ -81,7 +108,7 @@ class Modal {
       button.className = buttonObj.class ? buttonObj.class : '';
 
       buttonObj.element = button;
-      buttonObj.callback = buttonObj.callback.bind(buttonObj, modal);
+      buttonObj.callback = buttonObj.callback.bind(buttonObj);
 
       button.addEventListener('click', buttonObj.callback);
 
@@ -108,7 +135,7 @@ class Modal {
   cleanModal() {
     this.removeEvents();
     this.removeButtons();
-
+    this.callbackClose();
     $(this.modal).off('hide.bs.modal', this.cleanModal);
   }
 
