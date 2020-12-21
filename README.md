@@ -30,24 +30,37 @@ Há um exemplo de utilização no arquivo **index.html**
   /**
    * Classe responsável pelas modais
    * 1 Parâmetro: Seletor da modal
-   * 2 Parâmetro: Array de objetos com informações dos botões
+   * 2 Parâmetro(Opcional): Array de objetos com informações dos botões
+   * 3 Parâmetro(Opcional): Array de objetos com os callbacks(podem ser "open" e "close")
    */
-  const modal = new Modal('#exampleModal', [
-    {
-      text: 'Cancelar',
-      class: 'btn btn-secondary',
-      callback: function (modal, event) {
-        modal.close();
+  const modal = new Modal(
+    '#exampleModal',
+    [
+      {
+        text: 'Cancelar',
+        class: 'btn btn-secondary',
+        callback: function (event) {
+          modal.close();
+        },
       },
-    },
-    {
-      text: 'Confirmar',
-      class: 'btn btn-danger',
-      callback: function (modal, event) {
-        console.log('registro excluido!');
+      {
+        text: 'Confirmar',
+        class: 'btn btn-danger',
+        callback: function (event) {
+          console.log(event);
+          console.log('botão de confirmar foi clicado!');
+        },
       },
-    },
-  ]);
+    ],
+    {
+      open: function () {
+        console.log('Modal Abriu');
+      },
+      close: function () {
+        console.log('Modal Fechou');
+      },
+    }
+  );
 
   modal.setTitle('Exclusão de Registro');
   modal.setBody('Deseja excluir o registro?');
